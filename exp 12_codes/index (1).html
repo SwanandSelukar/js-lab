@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Campus Event &amp; Workshop Registration System | VA 12</title>
+<style>
+:root{
+  --paper:#fbfaf7; --card:#ffffff; --ink:#16213a; --ink2:#4b5470; --mute:#8a92a8;
+  --line:#e3e0d8; --line2:#efece5;
+  --navy:#1b2f5e; --navy-d:#12214a;
+  --teal:#0f766e; --teal-bg:#e6f4f1;
+  --amber:#b45309; --amber-bg:#fdf1de;
+  --red:#b42318; --red-bg:#fde8e6;
+  --blue-bg:#e8eefb;
+  --serif:Cambria,Caladea,Georgia,"DejaVu Serif",serif;
+  --sans:Calibri,Carlito,"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html{font-size:16px}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.45}
+.wrap{max-width:1320px;margin:0 auto;padding:1.4rem 1.6rem 2.2rem}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid #6d8fe8;outline-offset:2px}
+
+/* ---------- header ---------- */
+.top{display:flex;gap:1.5rem;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;
+  padding-bottom:1.1rem;border-bottom:3px double var(--navy)}
+.crest{display:flex;gap:1rem;align-items:center}
+.seal{width:3.4rem;height:3.4rem;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;
+  font-family:var(--serif);font-size:1.15rem;font-weight:700;letter-spacing:.02em;box-shadow:0 0 0 3px var(--paper),0 0 0 4px var(--navy)}
+h1{font-family:var(--serif);font-size:clamp(1.5rem,2.1vw,1.95rem);line-height:1.1;color:var(--navy-d);letter-spacing:-.01em}
+.sub{color:var(--ink2);font-size:.95rem;margin-top:.3rem}
+.chips{display:flex;gap:.7rem;flex-wrap:wrap}
+.chip{background:var(--card);border:1px solid var(--line);border-radius:.6rem;padding:.4rem .8rem}
+.chip small{display:block;color:var(--mute);font-size:.74rem}
+.chip b{font-size:1rem}
+.chip .mono{font-variant-numeric:tabular-nums}
+.net-on b{color:var(--teal)} .net-off b{color:var(--red)}
+
+/* ---------- live bar ---------- */
+.live{display:flex;flex-wrap:wrap;gap:.6rem 1.4rem;align-items:center;margin:1rem 0;padding:.65rem .9rem;
+  background:var(--card);border:1px solid var(--line);border-radius:.6rem;font-size:.9rem}
+.live .grp{display:flex;align-items:center;gap:.45rem;color:var(--ink2)}
+.live .grp b{color:var(--ink);font-variant-numeric:tabular-nums}
+.dot{width:.65rem;height:.65rem;border-radius:50%;background:var(--teal);box-shadow:0 0 0 0 rgba(15,118,110,.5)}
+.dot.on{animation:pulse 1.8s infinite}
+.dot.off{background:var(--amber);animation:none}
+@keyframes pulse{70%{box-shadow:0 0 0 .55rem rgba(15,118,110,0)}100%{box-shadow:0 0 0 0 rgba(15,118,110,0)}}
+.live .push{margin-left:auto;display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}
+select,input[type=text],input[type=email],input[type=search],input[type=number],input[type=date]{
+  background:#fff;border:1px solid #cfcbc0;border-radius:.45rem;padding:.42rem .6rem;min-width:0}
+select:hover,input:hover{border-color:#a9a698}
+
+.btn{border:1px solid transparent;border-radius:.45rem;padding:.45rem .9rem;font-weight:600;font-size:.9rem;transition:background .15s,transform .05s}
+.btn:active{transform:translateY(1px)}
+.btn-p{background:var(--navy);color:#fff}.btn-p:hover{background:var(--navy-d)}
+.btn-o{background:#fff;border-color:#c5c1b6;color:var(--ink)}.btn-o:hover{background:#f3f1ea}
+.btn-t{background:var(--teal-bg);color:var(--teal);border-color:#bfe0da}.btn-t:hover{background:#d5ece7}
+.btn-d{background:var(--red-bg);color:var(--red);border-color:#f3c3be}.btn-d:hover{background:#fad4d0}
+.btn-s{padding:.28rem .6rem;font-size:.8rem}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.spin{display:inline-block;animation:rot .8s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+/* ---------- stats ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;margin-bottom:1.4rem}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:.7rem;padding:.9rem 1.1rem;position:relative;overflow:hidden}
+.stat::before{content:"";position:absolute;inset:0 auto 0 0;width:5px;background:var(--c)}
+.stat .n{font-family:var(--serif);font-size:2.3rem;line-height:1;font-weight:700;color:var(--c-d,var(--ink));font-variant-numeric:tabular-nums}
+.stat .l{font-weight:700;margin-top:.3rem}
+.stat .d{color:var(--mute);font-size:.82rem}
+.s1{--c:#3b6fd4;--c-d:#1f4aa8}.s2{--c:#0f766e;--c-d:#0b5a54}.s3{--c:#d98a1b;--c-d:#9a5b08}.s4{--c:#7a4fc7;--c-d:#573496}
+.bump{animation:bump .5s}
+@keyframes bump{40%{transform:scale(1.12)}}
+
+/* ---------- section heads ---------- */
+.sh{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin:0 0 .8rem}
+h2{font-family:var(--serif);font-size:1.35rem;color:var(--navy-d)}
+.sh p{color:var(--ink2);font-size:.88rem}
+
+/* ---------- events ---------- */
+.events{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1rem;margin-bottom:1.4rem}
+.ev{background:var(--card);border:1px solid var(--line);border-radius:.7rem;padding:1rem 1.05rem .95rem;display:flex;flex-direction:column;gap:.55rem;
+  position:relative;transition:box-shadow .2s,border-color .2s}
+.ev:hover{box-shadow:0 6px 18px rgba(22,33,58,.08)}
+.ev.picked{border-color:var(--navy);box-shadow:0 0 0 2px rgba(27,47,94,.15)}
+.ev .cat{align-self:flex-start;font-size:.75rem;font-weight:700;padding:.15rem .55rem;border-radius:99px;background:var(--blue-bg);color:#264a9a}
+.ev h3{font-family:var(--serif);font-size:1.18rem;line-height:1.2}
+.meta{list-style:none;padding:0;color:var(--ink2);font-size:.88rem;display:grid;gap:.12rem}
+.meta li{display:flex;gap:.5rem}.meta i{font-style:normal;width:1.1rem;text-align:center;color:var(--mute)}
+.seatline{display:flex;justify-content:space-between;align-items:baseline;margin-top:.2rem}
+.seatline .left{font-family:var(--serif);font-size:1.55rem;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.seatline .left small{font-family:var(--sans);font-size:.8rem;font-weight:400;color:var(--ink2);margin-left:.25rem}
+.seatline .frac{color:var(--ink2);font-size:.85rem;font-variant-numeric:tabular-nums}
+.pips{display:grid;grid-template-columns:repeat(20,1fr);gap:2px;height:.7rem}
+.pips s{background:var(--c);border-radius:2px;opacity:1;text-decoration:none}
+.pips s.free{background:#e9e6de}
+.ok{--c:var(--teal)}.low{--c:#d98a1b}.full{--c:var(--red)}
+.tag{font-size:.76rem;font-weight:700;border-radius:.3rem;padding:.08rem .45rem}
+.ok .tag{background:var(--teal-bg);color:var(--teal)}.low .tag{background:var(--amber-bg);color:var(--amber)}.full .tag{background:var(--red-bg);color:var(--red)}
+.ev .acts{display:flex;gap:.5rem;margin-top:.15rem}.ev .acts .btn:first-child{flex:1}
+.flash{animation:flash 1s}
+@keyframes flash{0%{background:#fff6d6}100%{background:var(--card)}}
+
+.addpanel{display:none;background:var(--card);border:1px dashed #b9b5a8;border-radius:.7rem;padding:.9rem 1rem;margin-bottom:1rem}
+.addpanel .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.7rem;align-items:end}
+label.f{display:grid;gap:.25rem;font-size:.84rem;font-weight:600;color:var(--ink2)}
+label.f input,label.f select{font-weight:400;color:var(--ink);width:100%}
+
+/* ---------- two-col ---------- */
+.two{display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:1.1rem;align-items:start;margin-bottom:1.4rem}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:.7rem;padding:1rem 1.1rem}
+.panel h2{margin-bottom:.15rem}
+.hint{color:var(--ink2);font-size:.85rem;margin-bottom:.8rem}
+form .g2{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+form label.f{margin-bottom:.7rem}
+.fe{color:var(--red);font-size:.8rem;font-weight:600;min-height:0;display:none}
+.invalid input,.invalid select{border-color:var(--red);background:#fff8f7}
+.invalid .fe{display:block}
+.seatnote{font-size:.84rem;padding:.45rem .65rem;border-radius:.45rem;margin-bottom:.8rem;background:#f3f1ea;color:var(--ink2)}
+.btnrow{display:flex;gap:.6rem}.btnrow .btn:first-child{flex:1}
+.formmsg{margin-top:.7rem;font-size:.88rem;font-weight:600;min-height:1.2em}
+.formmsg.err{color:var(--red)}.formmsg.good{color:var(--teal)}
+
+.tools{display:flex;gap:.6rem;flex-wrap:wrap;margin:.7rem 0}
+.tools input[type=search]{flex:1;min-width:180px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:.55rem}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th{background:#f4f2ec;text-align:left;font-size:.78rem;color:var(--ink2);padding:.5rem .7rem;white-space:nowrap;border-bottom:1px solid var(--line)}
+td{padding:.5rem .7rem;border-bottom:1px solid var(--line2);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tbody tr:hover{background:#faf9f4}
+td.prn{font-variant-numeric:tabular-nums;font-weight:700}
+.badge{background:var(--teal-bg);color:var(--teal);font-weight:700;font-size:.74rem;padding:.12rem .5rem;border-radius:99px}
+.empty{padding:1.4rem;text-align:center;color:var(--mute)}
+mark{background:#ffe9a6;padding:0 .1rem;border-radius:2px}
+tr.newrow{animation:flash 1.4s}
+
+/* ---------- storage ---------- */
+.store{display:grid;grid-template-columns:1fr minmax(260px,360px);gap:1.2rem;align-items:center}
+.store .btns{display:flex;gap:.6rem;flex-wrap:wrap}
+.meter{height:.7rem;background:#ebe8df;border-radius:99px;overflow:hidden}
+.meter span{display:block;height:100%;background:linear-gradient(90deg,#7a4fc7,#3b6fd4);width:0;transition:width .4s}
+.usage{display:flex;justify-content:space-between;font-size:.84rem;color:var(--ink2);margin-bottom:.3rem}
+.usage b{color:var(--ink)}
+code{font-family:Consolas,"DejaVu Sans Mono",monospace;background:#f1efe8;padding:.05rem .3rem;border-radius:.25rem;font-size:.85em}
+
+#toasts{position:fixed;right:1rem;bottom:1rem;display:grid;gap:.5rem;z-index:20}
+.toast{background:var(--ink);color:#fff;padding:.6rem .9rem;border-radius:.5rem;font-size:.9rem;box-shadow:0 6px 20px rgba(0,0,0,.25);animation:tin .25s}
+.toast.good{background:var(--teal)}.toast.bad{background:var(--red)}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}}
+
+footer{color:var(--mute);font-size:.8rem;text-align:center;margin-top:1.2rem}
+
+@media(max-width:1000px){.stats{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}.store{grid-template-columns:1fr}.live .push{margin-left:0}}
+@media(max-width:560px){.wrap{padding:1rem .8rem}.stats{grid-template-columns:1fr 1fr}form .g2{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="crest">
+      <div class="seal" aria-hidden="true">VA</div>
+      <div>
+        <h1>Campus Event &amp; Workshop Registration System</h1>
+        <p class="sub">Experiment 12: JavaScript &amp; jQuery with DOM, events, Web Storage and AJAX</p>
+      </div>
+    </div>
+    <div class="chips">
+      <div class="chip"><small>Student</small><b>Parth Dhoke</b> <small style="display:inline">PRN 24070521257</small></div>
+      <div class="chip"><small>Live clock</small><b class="mono" id="clock">--:--:--</b> <small id="dateline" style="display:inline"></small></div>
+      <div class="chip net-on" id="net"><small>Network status</small><b id="netText">Online</b></div>
+    </div>
+  </header>
+
+  <section class="live" aria-label="Real-time tracking">
+    <span class="grp"><span class="dot on" id="trackDot"></span><b id="trackText">Seat tracking active</b></span>
+    <span class="grp">Next auto-check in <b id="countdown">10s</b></span>
+    <span class="grp">Last AJAX sync <b id="lastSync">never</b></span>
+    <div class="push">
+      <label class="grp" for="interval">Auto-refresh
+        <select id="interval">
+          <option value="0">Off</option>
+          <option value="5">Every 5 seconds</option>
+          <option value="10" selected>Every 10 seconds</option>
+          <option value="30">Every 30 seconds</option>
+        </select>
+      </label>
+      <button class="btn btn-p" id="syncBtn"><span id="syncIcon">&#8635;</span> Sync via AJAX</button>
+      <button class="btn btn-o" id="pauseBtn">Pause auto-check</button>
+    </div>
+  </section>
+
+  <section class="stats" aria-label="Statistics">
+    <div class="stat s1"><div class="n" id="stReg">0</div><div class="l">Total registrations</div><div class="d">Students enrolled</div></div>
+    <div class="stat s2"><div class="n" id="stSess">0</div><div class="l">Sessions listed</div><div class="d"><span id="stOpen">0</span> still open for booking</div></div>
+    <div class="stat s3"><div class="n" id="stSeats">0</div><div class="l">Seats remaining</div><div class="d">Across all sessions</div></div>
+    <div class="stat s4"><div class="n"><span id="stKB">0</span><small style="font-size:1rem"> KB</small></div><div class="l">Local storage used</div><div class="d">Key <code>vac12_campus_data</code></div></div>
+  </section>
+
+  <section>
+    <div class="sh">
+      <div><h2>Available events &amp; workshops</h2><p>Pick “Select event” to fill the registration form, or add and remove sessions.</p></div>
+      <div style="display:flex;gap:.6rem">
+        <button class="btn btn-p" id="toggleAdd">+ Add new event</button>
+        <button class="btn btn-o" id="refreshEv">Refresh events</button>
+      </div>
+    </div>
+    <div class="addpanel" id="addPanel">
+      <div class="row">
+        <label class="f">Title<input type="text" id="nTitle" placeholder="e.g. Data Science Bootcamp"></label>
+        <label class="f">Category<input type="text" id="nCat" placeholder="e.g. Data"></label>
+        <label class="f">Date<input type="date" id="nDate"></label>
+        <label class="f">Venue<input type="text" id="nVenue" placeholder="e.g. Lab 3, SIT"></label>
+        <label class="f">Speaker<input type="text" id="nSpeaker" placeholder="e.g. Dr. A. Kulkarni"></label>
+        <label class="f">Capacity<input type="number" id="nCap" min="1" max="500" value="40"></label>
+        <button class="btn btn-t" id="saveEvent">Add event</button>
+      </div>
+      <div class="formmsg err" id="addMsg"></div>
+    </div>
+    <div class="events" id="events"></div>
+  </section>
+
+  <section class="two">
+    <div class="panel">
+      <h2>Student registration</h2>
+      <p class="hint">All fields are required. One seat per student per event.</p>
+      <form id="regForm" novalidate>
+        <div class="g2">
+          <label class="f" id="gPrn">PRN / roll number<input type="text" id="prn" inputmode="numeric" placeholder="24070521257" autocomplete="off"><span class="fe"></span></label>
+          <label class="f" id="gName">Full name<input type="text" id="name" placeholder="Parth Dhoke" autocomplete="off"><span class="fe"></span></label>
+        </div>
+        <label class="f" id="gEmail">Institutional email<input type="email" id="email" placeholder="name@sitpune.edu.in" autocomplete="off"><span class="fe"></span></label>
+        <label class="f" id="gEvent">Workshop / event<select id="eventSel"></select><span class="fe"></span></label>
+        <div class="seatnote" id="seatNote">Select an event to see its seat availability.</div>
+        <div class="btnrow">
+          <button type="submit" class="btn btn-p" id="regBtn">Register for event</button>
+          <button type="button" class="btn btn-o" id="fillBtn">Auto-fill sample</button>
+          <button type="reset" class="btn btn-o" id="resetBtn">Reset</button>
+        </div>
+        <div class="formmsg" id="formMsg" role="status"></div>
+      </form>
+    </div>
+
+    <div class="panel">
+      <div class="sh" style="margin-bottom:0"><div><h2>Registered students</h2><p id="rosterCount">0 students shown</p></div></div>
+      <div class="tools">
+        <input type="search" id="q" placeholder="Search by PRN, name or email" aria-label="Search roster">
+        <select id="filterEv" aria-label="Filter by event"></select>
+        <select id="sortBy" aria-label="Sort order">
+          <option value="new">Newest first</option>
+          <option value="old">Oldest first</option>
+          <option value="name">Name A to Z</option>
+          <option value="prn">PRN ascending</option>
+          <option value="event">Event title</option>
+        </select>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>PRN</th><th>Student name</th><th>Email</th><th>Event</th><th>Registered at</th><th>Status</th><th></th></tr></thead>
+          <tbody id="roster"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="store">
+      <div>
+        <h2>Storage &amp; backup</h2>
+        <p class="hint">Data is saved as JSON in <code>localStorage</code> and survives a page refresh.</p>
+        <div class="btns">
+          <button class="btn btn-t" id="saveLS">Save to localStorage</button>
+          <button class="btn btn-o" id="loadLS">Reload from storage</button>
+          <button class="btn btn-o" id="csvBtn">Export roster (CSV)</button>
+          <button class="btn btn-d" id="clearBtn">Clear all registrations</button>
+        </div>
+      </div>
+      <div>
+        <div class="usage"><span>Current storage usage</span><span><b id="useKB">0 KB</b> of about 5,120 KB</span></div>
+        <div class="meter"><span id="useBar"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>VA 12 &middot; Visual Studio Code &middot; Google Chrome &middot; jQuery</footer>
+</div>
+<div id="toasts" aria-live="polite"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+<script>window.jQuery || document.write('<script src="jquery.min.js"><\/script>')</script>
+<script>
+$(function () {
+  'use strict';
+  var KEY = 'vac12_campus_data';
+  var S = { events: [], regs: [] };
+  var timer = null, tick = null, secs = 10, paused = false, busy = false;
+
+  /* ---------- AJAX: a tiny mock "server" so $.ajax works from file:// ---------- */
+  var SERVER = { latency: 450 };
+  $.ajaxTransport('json', function (opts) {
+    if (opts.url.indexOf('api/seats') !== 0) { return; }
+    return {
+      send: function (hdr, done) {
+        setTimeout(function () {
+          // server-side view of seats: events plus walk-in bookings made elsewhere
+          var payload = { time: new Date().toISOString(), seats: {} };
+          $.each(S.events, function (i, e) {
+            if (!e.fixed && Math.random() < 0.22 && e.external + regCount(e.id) < e.cap) { e.external += 1; }
+            payload.seats[e.id] = { cap: e.cap, external: e.external };
+          });
+          done(200, 'success', { json: payload });
+        }, SERVER.latency);
+      },
+      abort: function () {}
+    };
+  });
+
+  /* ---------- helpers ---------- */
+  function esc(s) { return $('<div>').text(s).html(); }
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function fmt(d) { d = new Date(d); return pad(d.getDate()) + '-' + pad(d.getMonth() + 1) + '-' + d.getFullYear() + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+  function fmtT(d) { d = new Date(d); return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()); }
+  function fmtDate(s) { var d = new Date(s + 'T00:00:00'); return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }); }
+  function regCount(id) { return S.regs.filter(function (r) { return r.eventId === id; }).length; }
+  function booked(e) { return e.external + regCount(e.id); }
+  function left(e) { return Math.max(0, e.cap - booked(e)); }
+  function getEvent(id) { return S.events.filter(function (e) { return e.id === id; })[0]; }
+  function toast(msg, kind) {
+    var $t = $('<div class="toast">').addClass(kind || '').text(msg).appendTo('#toasts');
+    setTimeout(function () { $t.fadeOut(300, function () { $t.remove(); }); }, 2600);
+  }
+  function mark(text, q) {
+    text = esc(text); if (!q) { return text; }
+    var re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig');
+    return text.replace(re, '<mark>$1</mark>');
+  }
+
+  /* ---------- seed data + Web Storage ---------- */
+  function seed() {
+    var now = Date.now(), m = 60000;
+    S.events = [
+      { id: 'e1', cat: 'Artificial Intelligence', title: 'AI & Machine Learning Workshop', date: '2026-10-22', venue: 'Seminar Hall, SIT', speaker: 'Dr. Rajesh Sharma', cap: 30, external: 22 },
+      { id: 'e2', cat: 'Web Technologies', title: 'Web Development Bootcamp', date: '2026-10-25', venue: 'Lab 6, SIT', speaker: 'Prof. Neha Gupta', cap: 40, external: 28 },
+      { id: 'e3', cat: 'Competitive Coding', title: 'Hackathon 2026', date: '2026-11-01', venue: 'Innovation Lab', speaker: 'Dr. Arvind Kumar', cap: 50, external: 50, fixed: true },
+      { id: 'e4', cat: 'Cloud Computing', title: 'Cloud Architecture Seminar', date: '2026-11-05', venue: 'Computing Hub 2', speaker: 'Prof. Priya Verma', cap: 35, external: 12 }
+    ];
+    S.regs = [
+      { prn: '24070521257', name: 'Parth Dhoke',  email: 'parth.dhoke@sitpune.edu.in',  eventId: 'e2', at: now - 41 * m },
+      { prn: '24070521198', name: 'Sneha Patil',  email: 'sneha.patil@sitpune.edu.in',  eventId: 'e4', at: now - 33 * m },
+      { prn: '24070521214', name: 'Anish Singh',  email: 'anish.singh@sitpune.edu.in',  eventId: 'e1', at: now - 22 * m },
+      { prn: '24070521202', name: 'Riya Mehta',   email: 'riya.mehta@sitpune.edu.in',   eventId: 'e2', at: now - 9 * m },
+      { prn: '24070521231', name: 'Kunal Joshi',  email: 'kunal.joshi@sitpune.edu.in',  eventId: 'e1', at: now - 4 * m }
+    ];
+  }
+  function save(silent) {
+    try { localStorage.setItem(KEY, JSON.stringify(S)); if (!silent) { toast('Saved to localStorage', 'good'); } }
+    catch (e) { toast('Could not save: ' + e.message, 'bad'); }
+    usage();
+  }
+  function load(silent) {
+    var raw = null;
+    try { raw = localStorage.getItem(KEY); } catch (e) {}
+    if (raw) {
+      try { S = JSON.parse(raw); if (!silent) { toast('Reloaded from storage', 'good'); } return true; } catch (e) {}
+    }
+    return false;
+  }
+  function usage() {
+    var raw = ''; try { raw = localStorage.getItem(KEY) || ''; } catch (e) {}
+    var kb = (raw.length * 2) / 1024;                  // JS strings are UTF-16
+    $('#stKB').text(kb.toFixed(2)); $('#useKB').text(kb.toFixed(2) + ' KB');
+    $('#useBar').css('width', Math.max(1.5, Math.min(100, kb / 5120 * 100)) + '%');
+  }
+
+  /* ---------- render: statistics + events ---------- */
+  function setNum(sel, v) {
+    var $e = $(sel); if ($e.text() !== String(v)) { $e.text(v).removeClass('bump'); void $e[0].offsetWidth; $e.addClass('bump'); }
+  }
+  function renderStats() {
+    var seats = 0, open = 0;
+    $.each(S.events, function (i, e) { var l = left(e); seats += l; if (l > 0) { open++; } });
+    setNum('#stReg', S.regs.length); setNum('#stSess', S.events.length); setNum('#stSeats', seats); $('#stOpen').text(open);
+  }
+  function renderEvents(flashId) {
+    var $box = $('#events').empty();
+    $.each(S.events, function (i, e) {
+      var l = left(e), b = e.cap - l, pct = b / e.cap;
+      var cls = l === 0 ? 'full' : (l / e.cap <= 0.2 ? 'low' : 'ok');
+      var tag = l === 0 ? 'Full' : (cls === 'low' ? 'Filling fast' : 'Open');
+      var pips = ''; var filled = Math.round(pct * 20);
+      for (var k = 0; k < 20; k++) { pips += '<s class="' + (k < filled ? '' : 'free') + '"></s>'; }
+      var $c = $(
+        '<article class="ev ' + cls + '" data-id="' + e.id + '">' +
+          '<span class="cat">' + esc(e.cat) + '</span>' +
+          '<h3>' + esc(e.title) + '</h3>' +
+          '<ul class="meta"><li><i>&#128197;</i>' + fmtDate(e.date) + '</li><li><i>&#128205;</i>' + esc(e.venue) + '</li><li><i>&#127908;</i>' + esc(e.speaker) + '</li></ul>' +
+          '<div class="seatline"><span class="left">' + l + '<small>seats left</small></span><span><span class="tag">' + tag + '</span> <span class="frac">' + b + ' / ' + e.cap + '</span></span></div>' +
+          '<div class="pips" role="img" aria-label="' + b + ' of ' + e.cap + ' seats booked">' + pips + '</div>' +
+          '<div class="acts"><button class="btn btn-p btn-s selEv"' + (l === 0 ? ' disabled' : '') + '>' + (l === 0 ? 'Sold out' : 'Select event') + '</button>' +
+          '<button class="btn btn-d btn-s rmEv">Remove</button></div>' +
+        '</article>');
+      if ($('#eventSel').val() === e.id) { $c.addClass('picked'); }
+      if (flashId === e.id) { $c.addClass('flash'); }
+      $box.append($c);
+    });
+  }
+  function renderSelects() {
+    var cur = $('#eventSel').val(), curF = $('#filterEv').val();
+    var $s = $('#eventSel').empty().append('<option value="">Choose an event</option>');
+    var $f = $('#filterEv').empty().append('<option value="">All events</option>');
+    $.each(S.events, function (i, e) {
+      $s.append($('<option>').val(e.id).text(e.title + (left(e) === 0 ? ' (full)' : '')).prop('disabled', left(e) === 0));
+      $f.append($('<option>').val(e.id).text(e.title));
+    });
+    if (getEvent(cur)) { $s.val(cur); } if (getEvent(curF)) { $f.val(curF); }
+    seatNote();
+  }
+  function seatNote() {
+    var e = getEvent($('#eventSel').val()), $n = $('#seatNote');
+    if (!e) { $n.text('Select an event to see its seat availability.'); return; }
+    $n.html('<b>' + left(e) + '</b> of ' + e.cap + ' seats left for <b>' + esc(e.title) + '</b>, ' + fmtDate(e.date) + '.');
+  }
+
+  /* ---------- render: roster (search, filter, sort) ---------- */
+  function renderRoster(newPrn) {
+    var q = $.trim($('#q').val()), ql = q.toLowerCase(), f = $('#filterEv').val(), srt = $('#sortBy').val();
+    var rows = S.regs.filter(function (r) {
+      if (f && r.eventId !== f) { return false; }
+      return !ql || (r.prn + ' ' + r.name + ' ' + r.email).toLowerCase().indexOf(ql) > -1;
+    });
+    var title = function (r) { var e = getEvent(r.eventId); return e ? e.title : ''; };
+    rows.sort(function (a, b) {
+      if (srt === 'old') { return a.at - b.at; }
+      if (srt === 'name') { return a.name.localeCompare(b.name); }
+      if (srt === 'prn') { return a.prn.localeCompare(b.prn); }
+      if (srt === 'event') { return title(a).localeCompare(title(b)); }
+      return b.at - a.at;
+    });
+    var $tb = $('#roster').empty();
+    if (!rows.length) {
+      $tb.append('<tr><td colspan="7" class="empty">' + (S.regs.length ? 'No students match this search or filter.' : 'No registrations yet. Fill the form to enrol the first student.') + '</td></tr>');
+    }
+    $.each(rows, function (i, r) {
+      $tb.append(
+        '<tr' + (newPrn === r.prn + r.eventId ? ' class="newrow"' : '') + ' data-prn="' + esc(r.prn) + '" data-ev="' + r.eventId + '">' +
+        '<td class="prn">' + mark(r.prn, q) + '</td><td>' + mark(r.name, q) + '</td><td>' + mark(r.email, q) + '</td>' +
+        '<td>' + esc(title(r)) + '</td><td>' + fmt(r.at) + '</td><td><span class="badge">Confirmed</span></td>' +
+        '<td><button class="btn btn-d btn-s delReg" aria-label="Delete registration of ' + esc(r.name) + '">Delete</button></td></tr>');
+    });
+    $('#rosterCount').text(rows.length + (rows.length === 1 ? ' student' : ' students') + ' shown, ' + S.regs.length + ' enrolled in total');
+  }
+  function renderAll(flashId, newKey) { renderEvents(flashId); renderSelects(); renderRoster(newKey); renderStats(); usage(); }
+
+  /* ---------- registration form + validation ---------- */
+  function fieldErr(id, msg) {
+    var $g = $(id); if (msg) { $g.addClass('invalid').find('.fe').text(msg); } else { $g.removeClass('invalid').find('.fe').text(''); }
+    return !msg;
+  }
+  $('#regForm').on('submit', function (ev) {
+    ev.preventDefault();
+    var prn = $.trim($('#prn').val()), name = $.trim($('#name').val()), email = $.trim($('#email').val()).toLowerCase(), eid = $('#eventSel').val();
+    var e = getEvent(eid), ok = true, $m = $('#formMsg').removeClass('err good');
+    ok = fieldErr('#gPrn', !prn ? 'PRN is required' : (!/^\d{8,12}$/.test(prn) ? 'Use 8 to 12 digits' : '')) && ok;
+    ok = fieldErr('#gName', !name ? 'Name is required' : (name.length < 3 ? 'Enter the full name' : '')) && ok;
+    ok = fieldErr('#gEmail', !email ? 'Email is required' : (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? 'Enter a valid email address' : (!/\.(edu|ac)(\.[a-z]{2})?$/.test(email) ? 'Use your institutional email (.edu.in or .ac.in)' : ''))) && ok;
+    ok = fieldErr('#gEvent', !eid ? 'Choose an event' : '') && ok;
+    if (!ok) { $m.addClass('err').text('Please fix the highlighted fields.'); return; }
+    if (S.regs.some(function (r) { return r.prn === prn && r.eventId === eid; })) {
+      fieldErr('#gPrn', 'This PRN is already registered for this event'); $m.addClass('err').text('Duplicate registration blocked.'); return;
+    }
+    if (left(e) === 0) { $m.addClass('err').text('No seats remain for this event.'); toast('Event is full', 'bad'); return; }
+    S.regs.push({ prn: prn, name: name, email: email, eventId: eid, at: Date.now() });
+    save(true); renderAll(eid, prn + eid);
+    $m.addClass('good').text(name + ' is registered. ' + left(e) + ' seats left.');
+    toast('Registered ' + name, 'good');
+    $('#prn,#name,#email').val('');
+  });
+  $('#regForm').on('input change', 'input,select', function () {
+    var id = this.id; $(this).closest('label').removeClass('invalid').find('.fe').text('');
+    if (id === 'eventSel') { seatNote(); $('.ev').removeClass('picked').filter('[data-id="' + $(this).val() + '"]').addClass('picked'); }
+  });
+  $('#resetBtn').on('click', function () { setTimeout(function () { $('.invalid').removeClass('invalid'); $('#formMsg').text(''); renderEvents(); seatNote(); }, 0); });
+
+  var SAMPLES = [['Aarav Kulkarni', '24070521301'], ['Ishita Deshmukh', '24070521318'], ['Rohan Pawar', '24070521325'], ['Meera Nair', '24070521340'], ['Siddharth Rao', '24070521356'], ['Tanvi Bhosale', '24070521372']];
+  $('#fillBtn').on('click', function () {
+    var used = {}; $.each(S.regs, function (i, r) { used[r.prn] = 1; });
+    var pick = SAMPLES.filter(function (s) { return !used[s[1]]; })[0] || SAMPLES[0];
+    var first = pick[0].split(' ')[0].toLowerCase(), last = pick[0].split(' ')[1].toLowerCase();
+    $('#prn').val(pick[1]); $('#name').val(pick[0]); $('#email').val(first + '.' + last + '@sitpune.edu.in');
+    if (!$('#eventSel').val()) { var open = S.events.filter(function (e) { return left(e) > 0; })[0]; if (open) { $('#eventSel').val(open.id).trigger('change'); } }
+    $('.invalid').removeClass('invalid'); $('#formMsg').text('');
+  });
+
+  /* ---------- delegated handlers for dynamic buttons ---------- */
+  $('#events').on('click', '.selEv', function () {
+    var id = $(this).closest('.ev').data('id'); $('#eventSel').val(id).trigger('change');
+    $('#regForm')[0].scrollIntoView({ behavior: 'smooth', block: 'center' }); $('#prn').trigger('focus');
+  });
+  $('#events').on('click', '.rmEv', function () {
+    var id = $(this).closest('.ev').data('id'), e = getEvent(id), n = regCount(id);
+    if (!window.confirm('Remove "' + e.title + '"' + (n ? ' and its ' + n + ' registration(s)?' : '?'))) { return; }
+    S.events = S.events.filter(function (x) { return x.id !== id; });
+    S.regs = S.regs.filter(function (r) { return r.eventId !== id; });
+    save(true); renderAll(); toast('Event removed');
+  });
+  $('#roster').on('click', '.delReg', function () {
+    var $tr = $(this).closest('tr'), prn = String($tr.data('prn')), eid = $tr.data('ev');
+    S.regs = S.regs.filter(function (r) { return !(r.prn === prn && r.eventId === eid); });
+    save(true); renderAll(eid); toast('Registration deleted, seat released', 'good');
+  });
+
+  /* ---------- roster controls ---------- */
+  $('#q').on('input', function () { renderRoster(); });
+  $('#filterEv,#sortBy').on('change', function () { renderRoster(); });
+
+  /* ---------- add event ---------- */
+  $('#toggleAdd').on('click', function () { $('#addPanel').slideToggle(160); });
+  $('#saveEvent').on('click', function () {
+    var t = $.trim($('#nTitle').val()), d = $('#nDate').val(), v = $.trim($('#nVenue').val()), sp = $.trim($('#nSpeaker').val()), cap = parseInt($('#nCap').val(), 10);
+    if (!t || !d || !v || !sp || !(cap > 0)) { $('#addMsg').text('Fill in title, date, venue, speaker and a capacity above zero.'); return; }
+    var id = 'e' + Date.now();
+    S.events.push({ id: id, cat: $.trim($('#nCat').val()) || 'General', title: t, date: d, venue: v, speaker: sp, cap: cap, external: 0 });
+    $('#addPanel input[type=text],#addPanel input[type=date]').val(''); $('#addMsg').text('');
+    save(true); renderAll(id); toast('Event added', 'good');
+  });
+  $('#refreshEv').on('click', function () { renderAll(); toast('Events refreshed'); });
+
+  /* ---------- storage buttons ---------- */
+  $('#saveLS').on('click', function () { save(); });
+  $('#loadLS').on('click', function () { if (load()) { renderAll(); } else { toast('Nothing saved yet', 'bad'); } });
+  $('#clearBtn').on('click', function () {
+    if (!S.regs.length) { toast('No registrations to clear'); return; }
+    if (!window.confirm('Delete all ' + S.regs.length + ' registrations? Seats will be released.')) { return; }
+    S.regs = []; save(true); renderAll(); toast('All registrations cleared');
+  });
+  $('#csvBtn').on('click', function () {
+    if (!S.regs.length) { toast('Nothing to export', 'bad'); return; }
+    var q = function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; };
+    var lines = ['PRN,Name,Email,Event,Registered at'];
+    $.each(S.regs, function (i, r) { var e = getEvent(r.eventId); lines.push([r.prn, r.name, r.email, e ? e.title : '', fmt(r.at)].map(q).join(',')); });
+    var url = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/csv' }));
+    $('<a>').attr({ href: url, download: 'campus_roster.csv' }).appendTo('body')[0].click();
+    setTimeout(function () { URL.revokeObjectURL(url); $('a[download]').remove(); }, 500);
+    toast('Roster exported as CSV', 'good');
+  });
+
+  /* ---------- AJAX sync + auto-refresh ---------- */
+  function sync(manual) {
+    if (busy) { return; } busy = true;
+    $('#syncIcon').addClass('spin'); $('#syncBtn').prop('disabled', true);
+    $.ajax({ url: 'api/seats', dataType: 'json', cache: false })
+      .done(function (data) {
+        var changed = 0;
+        $.each(data.seats, function (id, s) { var e = getEvent(id); if (e && e.external !== s.external) { e.external = s.external; changed++; } });
+        $('#lastSync').text(fmt(data.time).slice(0, 10) + ' ' + fmtT(data.time));
+        if (changed) { save(true); renderAll(); toast(changed + ' session(s) updated from server', 'good'); }
+        else if (manual) { toast('Seats already up to date'); }
+      })
+      .fail(function () { toast('Sync failed. Check connection.', 'bad'); })
+      .always(function () { busy = false; $('#syncIcon').removeClass('spin'); $('#syncBtn').prop('disabled', false); resetCountdown(); });
+  }
+  function resetCountdown() { secs = parseInt($('#interval').val(), 10) || 0; showCountdown(); }
+  function showCountdown() { $('#countdown').text(paused ? 'paused' : (parseInt($('#interval').val(), 10) ? secs + 's' : 'off')); }
+  function startTick() {
+    clearInterval(tick);
+    tick = setInterval(function () {
+      var iv = parseInt($('#interval').val(), 10);
+      if (paused || !iv || busy) { showCountdown(); return; }
+      secs--; if (secs <= 0) { sync(false); } else { showCountdown(); }
+    }, 1000);
+  }
+  function trackState() {
+    var on = !paused && parseInt($('#interval').val(), 10) > 0;
+    $('#trackDot').toggleClass('on', on).toggleClass('off', !on);
+    $('#trackText').text(on ? 'Seat tracking active' : 'Seat tracking paused');
+    $('#pauseBtn').text(paused ? 'Resume auto-check' : 'Pause auto-check');
+  }
+  $('#syncBtn').on('click', function () { sync(true); });
+  $('#pauseBtn').on('click', function () { paused = !paused; trackState(); resetCountdown(); });
+  $('#interval').on('change', function () { resetCountdown(); trackState(); });
+
+  /* ---------- clock + network ---------- */
+  function clock() {
+    var d = new Date();
+    $('#clock').text(d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    $('#dateline').text(d.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' }));
+  }
+  function net() { var on = navigator.onLine; $('#net').toggleClass('net-on', on).toggleClass('net-off', !on); $('#netText').text(on ? 'Online' : 'Offline'); }
+  $(window).on('online offline', net);
+  setInterval(clock, 1000); clock(); net();
+
+  /* ---------- boot ---------- */
+  if (!load(true)) { seed(); save(true); }
+  renderAll(); trackState(); resetCountdown(); startTick();
+  $('#lastSync').text(fmt(Date.now()) + ':' + pad(new Date().getSeconds()));
+});
+</script>
+</body>
+</html>
