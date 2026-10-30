@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Student JSON Viewer</title>
+<style>
+@font-face{font-family:Head;src:url(fonts/head.woff2) format("woff2");font-weight:200 800}
+@font-face{font-family:Body;src:url(fonts/body.woff2) format("woff2");font-weight:400 700}
+:root{--bg:#e8ecf2;--paper:#fff;--ink:#14213d;--ink2:#4a5671;--line:#d5dbe6;--fetch:#c2410c;--jq:#0b6bb5;--ok:#14744b;--okbg:#ddf3e8;--bad:#b42323;--badbg:#fbe1e1}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.4 Body,system-ui,sans-serif;color:var(--ink);background-color:var(--bg);background-image:linear-gradient(rgba(20,33,61,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(20,33,61,.055) 1px,transparent 1px);background-size:24px 24px}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid #7aa7ff;outline-offset:2px}
+header{display:flex;justify-content:space-between;align-items:center;padding:22px 32px 16px}
+h1{font:700 34px/1 Head,sans-serif;letter-spacing:-.02em;margin:0 0 6px}
+header p{margin:0;color:var(--ink2)}
+.who{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 14px;text-align:right}
+.who b{display:block}.who span{color:var(--ink2)}
+main{display:grid;grid-template-columns:340px 1fr;gap:16px;padding:0 32px 28px}
+.col{display:flex;flex-direction:column;gap:12px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+h2{font:650 15px/1 Head,sans-serif;margin:0 0 10px}
+label{display:block;font-weight:600;margin-bottom:4px}
+select,input[type=search]{width:100%;height:38px;border:1px solid #b9c2d3;border-radius:8px;padding:0 10px;background:#fff}
+.btn{display:flex;align-items:center;gap:10px;width:100%;margin-top:8px;padding:9px 12px;border:0;border-radius:8px;color:#fff;cursor:pointer;text-align:left;font-weight:650}
+.btn small{display:block;font-weight:400;opacity:.9}
+.btn.f{background:var(--fetch)}.btn.j{background:var(--jq)}.btn:hover{filter:brightness(1.1)}
+svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+dl{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin:0}
+dt{color:var(--ink2);font-size:12.5px}dd{margin:0;font-weight:650;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.bars{margin-top:12px;border-top:1px solid var(--line);padding-top:10px;display:grid;gap:6px}
+.bar{display:grid;grid-template-columns:78px 1fr 48px;align-items:center;gap:8px;font-size:12.5px}
+.bar i{display:block;height:10px;border-radius:5px;background:#e3e8f1}.bar i b{display:block;height:100%;border-radius:5px;width:0}
+.bar em{font-style:normal;text-align:right;font-variant-numeric:tabular-nums}
+pre{margin:0;padding:10px 12px;border-radius:8px;background:var(--ink);color:#e7ecf7;font:12.5px/1.55 ui-monospace,Consolas,Menlo,monospace;overflow:auto}
+pre .k{color:#ffb37a}pre .s{color:#9fd8a8}
+.tools{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.tools input{max-width:300px}.tools select{width:auto;max-width:210px}.sp{flex:1}
+.ghost{height:38px;display:flex;align-items:center;gap:6px;padding:0 12px;border:1px solid #b9c2d3;border-radius:8px;background:#fff;cursor:pointer}
+.ghost:hover{background:#f1f4f9}
+.tag{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-left:10px;border-left:4px solid var(--line);color:var(--ink2)}
+.tag b{color:var(--ink)}
+table{width:100%;border-collapse:collapse}
+th,td{padding:0 10px;height:41px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{height:38px;background:#f1f4f9;font-size:12.5px;font-weight:650;color:var(--ink2)}
+th button{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:4px}
+th button svg{width:13px;height:13px;opacity:.45}th[aria-sort] button svg{opacity:1;color:var(--ink)}
+tbody tr:hover{background:#f6f8fc}
+.n{font-variant-numeric:tabular-nums}.name{font-weight:650}.roll{color:var(--jq);font-variant-numeric:tabular-nums}
+.at{display:flex;align-items:center;gap:8px}
+.m{width:64px;height:7px;border-radius:4px;background:#e3e8f1}.m span{display:block;height:100%;width:var(--v);border-radius:4px;background:var(--ok)}
+.chip{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12.5px;font-weight:650}
+.chip.a{background:var(--okbg);color:var(--ok)}.chip.i{background:var(--badbg);color:var(--bad)}
+.view{padding:4px 10px;border:1px solid #b9c2d3;border-radius:6px;background:#fff;cursor:pointer}
+.view:hover{background:#f1f4f9}
+mark{background:#ffe48a;border-radius:2px}
+.empty{padding:70px 20px;text-align:center;color:var(--ink2)}
+.empty b{display:block;color:var(--ink);font:650 18px Head,sans-serif;margin-bottom:4px}
+.err{margin-bottom:10px;padding:9px 12px;border-radius:8px;background:var(--badbg);color:var(--bad);font-weight:600}
+.foot{display:flex;gap:24px;margin-top:12px;color:var(--ink2)}.foot b{color:var(--ink);font-variant-numeric:tabular-nums}
+dialog{border:1px solid var(--line);border-radius:12px;padding:18px;max-width:420px;width:90%}
+dialog::backdrop{background:rgba(20,33,61,.4)}
+@media(max-width:1000px){main{grid-template-columns:1fr}.tools{flex-wrap:wrap}.card.tbl{overflow-x:auto}}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>Student JSON Viewer</h1><p>Experiment 10: load JSON with fetch() and jQuery $.getJSON(), then render it as a table.</p></div>
+  <div class="who"><b>Parth Dhoke</b><span>PRN 24070521257</span></div>
+</header>
+<main>
+ <div class="col">
+  <section class="card">
+    <label for="src">JSON source</label>
+    <select id="src"><option value="students.json">students.json (local file)</option><option value="missing.json">missing.json (test the error state)</option></select>
+    <button class="btn f" id="bf"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span>Load with fetch()<small>Promise built into the browser</small></span></button>
+    <button class="btn j" id="bj"><svg viewBox="0 0 24 24"><path d="m8 7-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></svg><span>Load with $.getJSON()<small>jQuery callback chain</small></span></button>
+  </section>
+  <section class="card" aria-live="polite">
+    <h2>Last request</h2>
+    <dl id="trace"><dt>Method</dt><dt>URL</dt><dd>None yet</dd><dd>-</dd></dl>
+    <div class="bars">
+      <div class="bar"><span>fetch()</span><i><b id="tf" style="background:var(--fetch)"></b></i><em id="vf">-</em></div>
+      <div class="bar"><span>$.getJSON()</span><i><b id="tj" style="background:var(--jq)"></b></i><em id="vj">-</em></div>
+    </div>
+  </section>
+  <section class="card"><h2>Code that ran</h2><pre id="code">Load data to see the call.</pre></section>
+ </div>
+ <section class="card tbl">
+  <div class="tools">
+    <input type="search" id="q" placeholder="Search name, roll no or department" aria-label="Search students">
+    <select id="dep" aria-label="Department"><option value="">All departments</option></select>
+    <select id="sta" aria-label="Status"><option value="">All statuses</option><option>Active</option><option>Inactive</option></select>
+    <span class="sp"></span>
+    <button class="ghost" id="clr"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>Clear</button>
+    <button class="ghost" id="csv"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 20h16"/></svg>Export CSV</button>
+  </div>
+  <div id="msg"></div>
+  <div id="tag" class="tag"></div>
+  <table>
+    <thead><tr id="head"></tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+  <div id="empty" class="empty"><b>No records loaded</b>Choose a source, then load it with fetch() or $.getJSON().</div>
+  <div class="foot" id="foot" aria-live="polite"></div>
+ </section>
+</main>
+<dialog id="dlg"><h2 id="dt"></h2><pre id="dj"></pre><p><button class="ghost" onclick="dlg.close()">Close</button></p></dialog>
+<script type="application/json" id="fallback">[{"id": 1, "name": "Parth Dhoke", "rollNo": "24070521257", "department": "Computer Science & Engineering", "cgpa": 8.12, "attendance": 92, "status": "Active"}, {"id": 2, "name": "Riya Mehta", "rollNo": "24070521041", "department": "Artificial Intelligence & ML", "cgpa": 7.98, "attendance": 88, "status": "Active"}, {"id": 3, "name": "Arjun Khatri", "rollNo": "24070521108", "department": "Information Technology", "cgpa": 7.45, "attendance": 76, "status": "Inactive"}, {"id": 4, "name": "Sneha Pawar", "rollNo": "24070521096", "department": "Computer Science & Engineering", "cgpa": 8.63, "attendance": 95, "status": "Active"}, {"id": 5, "name": "Karan Joshi", "rollNo": "24070521177", "department": "Electronics & Telecommunication", "cgpa": 7.21, "attendance": 81, "status": "Active"}, {"id": 6, "name": "Priya Nair", "rollNo": "24070521023", "department": "Data Science", "cgpa": 8.05, "attendance": 89, "status": "Active"}, {"id": 7, "name": "Vikram Rao", "rollNo": "24070521156", "department": "Information Technology", "cgpa": 7.68, "attendance": 84, "status": "Inactive"}, {"id": 8, "name": "Aditi Kulkarni", "rollNo": "24070521089", "department": "Artificial Intelligence & ML", "cgpa": 8.34, "attendance": 91, "status": "Active"}]</script>
+<script src="jquery-3.7.1.min.js"></script>
+<script>
+const $id = i => document.getElementById(i);
+const COLS = [["id","ID"],["name","Name"],["rollNo","Roll no"],["department","Department"],["cgpa","CGPA"],["attendance","Attendance"],["status","Status"]];
+const S = {rows:[], key:"id", dir:1, t:{}};
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const SORT = '<svg viewBox="0 0 24 24"><path d="m8 9 4-4 4 4M8 15l4 4 4-4"/></svg>';
+$id("head").innerHTML = COLS.map(([k,l]) => `<th data-k="${k}"><button>${l}${SORT}</button></th>`).join("") + "<th>Details</th>";
+
+/* ---- Loading: the two methods being compared ---- */
+function viaFetch(url){
+  return fetch(url, {cache:"no-store"}).then(r => {
+    if(!r.ok) throw {status:r.status, text:r.statusText || "Error"};
+    return r.text().then(t => ({data:JSON.parse(t), status:r.status, text:r.statusText || "OK", bytes:t.length}));
+  });
+}
+function viaJQuery(url){
+  return new Promise((ok, no) => {
+    $.ajaxSetup({cache:false});
+    $.getJSON(url)
+      .done((data, _s, x) => ok({data, status:x.status, text:x.statusText, bytes:(x.responseText||"").length}))
+      .fail(x => no({status:x.status, text:x.statusText}));
+  });
+}
+function load(method){
+  const url = $id("src").value, t0 = performance.now();
+  $id("msg").innerHTML = "";
+  (method === "fetch" ? viaFetch : viaJQuery)(url)
+    .catch(e => {  // file:// pages cannot read local JSON; fall back to the embedded copy
+      if(location.protocol === "file:" && url === "students.json"){
+        const t = $id("fallback").textContent;
+        return {data:JSON.parse(t), status:200, text:"OK (embedded copy)", bytes:t.length};
+      }
+      throw e;
+    })
+    .then(r => {
+      const ms = Math.max(1, Math.round(performance.now() - t0));
+      if(!Array.isArray(r.data)) throw {status:r.status, text:"Expected a JSON array"};
+      S.rows = r.data; S.t[method] = ms;
+      trace(method, url, r.status + " " + r.text, ms + " ms", (r.bytes/1024).toFixed(1) + " kB", r.data.length);
+      deps(); draw(); code(method, url);
+      const t = $id("tag"); const c = method === "fetch" ? "--fetch" : "--jq";
+      t.style.borderColor = `var(${c})`; t.innerHTML = `Loaded with <b>${method === "fetch" ? "fetch()" : "$.getJSON()"}</b> in ${ms} ms`;
+    })
+    .catch(e => {
+      const ms = Math.round(performance.now() - t0), st = e.status ? e.status + " " + e.text : "Failed";
+      trace(method, url, st, ms + " ms", "-", 0);
+      $id("msg").innerHTML = `<div class="err" role="alert">Couldn't load ${esc(url)} (${esc(e.status ? st : e.message || "invalid JSON")}). Pick students.json and try again.</div>`;
+      code(method, url);
+    });
+}
+function trace(m, u, st, t, sz, n){
+  const L = ["Method","URL","Status","Time","Size","Records"], V = [m === "fetch" ? "fetch()" : "$.getJSON()", u, st, t, sz, n];
+  $id("trace").innerHTML = L.map((l,i) => `<div><dt>${l}</dt><dd>${esc(V[i])}</dd></div>`).join("");
+  const mx = Math.max(S.t.fetch||0, S.t.getJSON||0, 1);
+  [["fetch","f"],["getJSON","j"]].forEach(([k,s]) => { if(S.t[k]){ $id("t"+s).style.width = Math.max(8, S.t[k]/mx*100) + "%"; $id("v"+s).textContent = S.t[k] + " ms"; } });
+}
+function code(m, u){
+  $id("code").innerHTML = m === "fetch"
+   ? `<span class="k">fetch</span>(<span class="s">"${esc(u)}"</span>)\n  .then(res => res.<span class="k">json</span>())\n  .then(rows => <span class="k">render</span>(rows))\n  .catch(showError);`
+   : `$.<span class="k">getJSON</span>(<span class="s">"${esc(u)}"</span>)\n  .done(rows => <span class="k">render</span>(rows))\n  .fail(showError);`;
+}
+
+/* ---- Rendering ---- */
+function deps(){
+  const d = $id("dep"), cur = d.value;
+  d.innerHTML = '<option value="">All departments</option>' + [...new Set(S.rows.map(r => r.department))].sort().map(x => `<option>${esc(x)}</option>`).join("");
+  d.value = cur;
+}
+function hl(t, q){ t = String(t); const i = q ? t.toLowerCase().indexOf(q) : -1; return i < 0 ? esc(t) : esc(t.slice(0,i)) + "<mark>" + esc(t.slice(i, i+q.length)) + "</mark>" + esc(t.slice(i+q.length)); }
+function view(){
+  const q = $id("q").value.trim().toLowerCase(), d = $id("dep").value, s = $id("sta").value;
+  return S.rows.filter(r => (!d || r.department === d) && (!s || r.status === s) && (!q || [r.name, r.rollNo, r.department].some(v => v.toLowerCase().includes(q))))
+    .sort((a,b) => (a[S.key] > b[S.key] ? 1 : a[S.key] < b[S.key] ? -1 : 0) * S.dir);
+}
+function draw(){
+  const v = view(), q = $id("q").value.trim().toLowerCase();
+  $id("rows").innerHTML = v.map(r => `<tr><td class="n">${r.id}</td><td class="name">${hl(r.name,q)}</td><td class="roll">${hl(r.rollNo,q)}</td><td>${hl(r.department,q)}</td><td class="n">${r.cgpa.toFixed(2)}</td><td><div class="at"><div class="m"><span style="--v:${r.attendance}%"></span></div><span class="n">${r.attendance}%</span></div></td><td><span class="chip ${r.status === "Active" ? "a" : "i"}">${esc(r.status)}</span></td><td><button class="view" data-id="${r.id}">View</button></td></tr>`).join("");
+  document.querySelectorAll("th[data-k]").forEach(th => th.toggleAttribute("aria-sort", false) || (th.dataset.k === S.key && th.setAttribute("aria-sort", S.dir > 0 ? "ascending" : "descending")));
+  const has = S.rows.length > 0;
+  $id("empty").style.display = has ? "none" : "block"; $id("tag").style.display = has ? "flex" : "none";
+  document.querySelector("table").style.display = has ? "table" : "none";
+  const avg = k => v.length ? (v.reduce((a,r) => a + r[k], 0) / v.length) : 0;
+  $id("foot").innerHTML = has ? `<span>Showing <b>${v.length}</b> of <b>${S.rows.length}</b> students</span><span>Average CGPA <b>${avg("cgpa").toFixed(2)}</b></span><span>Average attendance <b>${avg("attendance").toFixed(0)}%</b></span><span>Active <b>${v.filter(r => r.status === "Active").length}</b></span>` : "";
+}
+
+/* ---- Events ---- */
+$id("bf").onclick = () => load("fetch");
+$id("bj").onclick = () => load("getJSON");
+["q","dep","sta"].forEach(i => $id(i).addEventListener("input", draw));
+$id("head").onclick = e => { const th = e.target.closest("th[data-k]"); if(!th) return; S.dir = S.key === th.dataset.k ? -S.dir : 1; S.key = th.dataset.k; draw(); };
+$id("clr").onclick = () => { S.rows = []; $id("q").value = ""; $id("msg").innerHTML = ""; deps(); draw(); };
+$id("rows").onclick = e => { const b = e.target.closest(".view"); if(!b) return; const r = S.rows.find(x => x.id == b.dataset.id); $id("dt").textContent = r.name; $id("dj").textContent = JSON.stringify(r, null, 2); $id("dlg").showModal(); };
+$id("csv").onclick = () => {
+  const v = view(); if(!v.length) return;
+  const f = x => '"' + String(x).replace(/"/g, '""') + '"';
+  const out = [COLS.map(c => c[1]).join(",")].concat(v.map(r => COLS.map(c => f(r[c[0]])).join(","))).join("\n");
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([out], {type:"text/csv"})); a.download = "students.csv"; a.click();
+};
+document.addEventListener("keydown", e => { if(e.key === "/" && document.activeElement.tagName !== "INPUT"){ e.preventDefault(); $id("q").focus(); } });
+draw();
+</script>
+</body>
+</html>

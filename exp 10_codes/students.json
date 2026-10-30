@@ -1,0 +1,10 @@
+[
+  {"id":1,"name":"Parth Dhoke","rollNo":"24070521257","department":"Computer Science & Engineering","cgpa":8.12,"attendance":92,"status":"Active"},
+  {"id":2,"name":"Riya Mehta","rollNo":"24070521041","department":"Artificial Intelligence & ML","cgpa":7.98,"attendance":88,"status":"Active"},
+  {"id":3,"name":"Arjun Khatri","rollNo":"24070521108","department":"Information Technology","cgpa":7.45,"attendance":76,"status":"Inactive"},
+  {"id":4,"name":"Sneha Pawar","rollNo":"24070521096","department":"Computer Science & Engineering","cgpa":8.63,"attendance":95,"status":"Active"},
+  {"id":5,"name":"Karan Joshi","rollNo":"24070521177","department":"Electronics & Telecommunication","cgpa":7.21,"attendance":81,"status":"Active"},
+  {"id":6,"name":"Priya Nair","rollNo":"24070521023","department":"Data Science","cgpa":8.05,"attendance":89,"status":"Active"},
+  {"id":7,"name":"Vikram Rao","rollNo":"24070521156","department":"Information Technology","cgpa":7.68,"attendance":84,"status":"Inactive"},
+  {"id":8,"name":"Aditi Kulkarni","rollNo":"24070521089","department":"Artificial Intelligence & ML","cgpa":8.34,"attendance":91,"status":"Active"}
+]
