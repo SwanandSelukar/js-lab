@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Class Scheduler &amp; Countdown</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+
+  <noscript><p class="notice">This page needs JavaScript to run the countdown.</p></noscript>
+  <p class="notice" id="file-notice" hidden>
+    ES6 modules don't load from a <code>file://</code> address. Open this folder with the
+    VS Code “Live Server” extension, or run <code>python -m http.server</code> in it and visit
+    <code>http://localhost:8000</code>.
+  </p>
+
+  <div class="page">
+
+    <header class="top">
+      <div class="title">
+        <h1>Class Scheduler &amp; Countdown</h1>
+        <p>A countdown to each class in today's routine, driven by JavaScript timers.</p>
+      </div>
+      <div class="clock" aria-label="Current time">
+        <span class="clock-time" id="clock-time">--:--:--</span>
+        <span class="clock-date" id="clock-date">&nbsp;</span>
+      </div>
+    </header>
+
+    <main class="layout">
+
+      <section class="left" aria-label="Countdown">
+
+        <div class="board" id="board" data-phase="ready">
+          <div class="board-head">
+            <h2 class="board-title" id="board-title">Next class</h2>
+            <span class="phase" id="phase">Ready</span>
+          </div>
+
+          <p class="subject" id="subject">Loading…</p>
+          <p class="meta">
+            <span class="chip" id="venue">—</span>
+            <span class="meta-len" id="length"></span>
+          </p>
+
+          <div class="flap" id="flap" role="timer" aria-labelledby="flap-sr">
+            <span class="sr-only" id="flap-sr">0 minutes 0 seconds</span>
+            <div class="group" aria-hidden="true">
+              <div class="tiles">
+                <div class="tile"><span class="half top"><i></i></span><span class="half bottom"><i></i></span><span class="half fold-top"><i></i></span><span class="half fold-bottom"><i></i></span></div>
+                <div class="tile"><span class="half top"><i></i></span><span class="half bottom"><i></i></span><span class="half fold-top"><i></i></span><span class="half fold-bottom"><i></i></span></div>
+              </div>
+              <span class="unit">minutes</span>
+            </div>
+            <span class="colon" aria-hidden="true"><b></b><b></b></span>
+            <div class="group" aria-hidden="true">
+              <div class="tiles">
+                <div class="tile"><span class="half top"><i></i></span><span class="half bottom"><i></i></span><span class="half fold-top"><i></i></span><span class="half fold-bottom"><i></i></span></div>
+                <div class="tile"><span class="half top"><i></i></span><span class="half bottom"><i></i></span><span class="half fold-top"><i></i></span><span class="half fold-bottom"><i></i></span></div>
+              </div>
+              <span class="unit">seconds</span>
+            </div>
+          </div>
+
+          <div class="controls">
+            <div class="buttons">
+              <button type="button" class="btn btn-start" id="btn-start">Start</button>
+              <button type="button" class="btn btn-ghost" id="btn-pause">Pause</button>
+              <button type="button" class="btn btn-ghost" id="btn-reset">Reset</button>
+            </div>
+            <form class="set" id="set-form" novalidate>
+              <label class="sr-only" for="seconds">Custom time in seconds</label>
+              <input id="seconds" name="seconds" type="text" inputmode="numeric" autocomplete="off" placeholder="Enter seconds">
+              <button type="submit" class="btn btn-ghost" id="btn-set">Set</button>
+            </form>
+          </div>
+
+          <p class="status" id="status" data-tone="info" role="status" aria-live="polite">Ready for the next class.</p>
+        </div>
+
+        <ul class="timers" aria-label="Timers in use">
+          <li id="t-clock" data-on="false">
+            <span class="t-name">Clock</span>
+            <span class="t-api">setInterval, every second</span>
+            <span class="t-state">Stopped</span>
+          </li>
+          <li id="t-countdown" data-on="false">
+            <span class="t-name">Countdown</span>
+            <span class="t-api">setInterval, every second</span>
+            <span class="t-state">Stopped</span>
+          </li>
+          <li id="t-timeout" data-on="false">
+            <span class="t-name">Notifications</span>
+            <span class="t-api">setTimeout, runs once</span>
+            <span class="t-state">None waiting</span>
+          </li>
+        </ul>
+      </section>
+
+      <aside class="right">
+
+        <section class="card" aria-labelledby="routine-h">
+          <div class="card-head">
+            <h2 id="routine-h">Class routine</h2>
+            <span class="count" id="routine-count">3 classes</span>
+          </div>
+          <ol class="routine" id="routine-body"></ol>
+          <div class="progress">
+            <div class="bar" id="bar" role="progressbar" aria-label="Classes completed" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <span id="bar-fill"></span>
+            </div>
+            <span class="bar-label" id="bar-label">0 of 3 completed</span>
+          </div>
+        </section>
+
+        <section class="card" aria-labelledby="mods-h">
+          <div class="card-head">
+            <h2 id="mods-h">ES6 modules</h2>
+            <span class="count flag" id="modules-status" data-on="false">Not loaded</span>
+          </div>
+          <ul class="files">
+            <li><code>routine.js</code><span>Class routine data</span></li>
+            <li><code>timer.js</code><span>Countdown and timeouts</span></li>
+            <li><code>clock.js</code><span>Live clock</span></li>
+            <li><code>ui.js</code><span>Updates the page</span></li>
+            <li><code>main.js</code><span>Imports the rest, handles buttons</span></li>
+          </ul>
+        </section>
+
+      </aside>
+    </main>
+
+    <footer class="foot">
+      <span>Parth Dhoke</span>
+      <span>PRN 24070521257</span>
+      <span>Experiment 11 (VA 11), JavaScript Lab</span>
+    </footer>
+  </div>
+
+  <script>
+    // Classic script: runs even when the module script is blocked.
+    if (location.protocol === 'file:') document.getElementById('file-notice').hidden = false;
+  </script>
+</body>
+</html>
